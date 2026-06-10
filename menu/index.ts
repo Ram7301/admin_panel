@@ -1,9 +1,6 @@
 // @project
 import type { NavItemType } from '@/hooks/useMenuCollapse';
 import manage from './manage';
-import other from './other';
-import pages from './pages';
-import uiElements from './ui-elements';
 
 interface MenuItems {
   items: NavItemType[];
@@ -12,7 +9,7 @@ interface MenuItems {
 /***************************  MENU ITEMS  ***************************/
 
 const menuItems: MenuItems = {
-  items: [manage, uiElements, pages, other]
+  items: [manage]
 };
 
 export default menuItems;

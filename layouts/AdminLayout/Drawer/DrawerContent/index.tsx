@@ -27,7 +27,7 @@ export default function DrawerContent() {
     <SimpleBar sx={{ height: contentHeight }}>
       <Stack sx={{ minHeight: contentHeight, px: !drawerOpen && upMD ? 0 : 2, justifyContent: 'space-between' }}>
         <ResponsiveDrawer />
-        <NavCard />
+        {/* <NavCard /> */}
       </Stack>
     </SimpleBar>
   );
