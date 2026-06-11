@@ -7,9 +7,9 @@ import Box from '@mui/material/Box';
 
 // @project
 import { NextLink } from '@/components/routes';
-// import AuthLogin from '@/sections/auth/AuthLogin';
-// import AuthSocial from '@/sections/auth/AuthSocial';
-// import Copyright from '@/sections/auth/Copyright';
+import AuthLogin from '@/sections/auth/AuthLogin';
+import AuthSocial from '@/sections/auth/AuthSocial';
+import Copyright from '@/sections/auth/Copyright';
 
 /***************************  AUTH - LOGIN  ***************************/
 
@@ -25,7 +25,7 @@ export default function Login() {
         </Stack>
 
         {/* Social login buttons */}
-        {/* <AuthSocial /> */}
+        <AuthSocial />
 
         <Divider sx={{ my: { xs: 4, sm: 5 } }}>
           <Typography variant="body2" color="text.secondary">
@@ -34,7 +34,7 @@ export default function Login() {
         </Divider>
 
         {/* Login form */}
-        {/* <AuthLogin /> */}
+        <AuthLogin />
 
         <Typography variant="body2" color="text.secondary" sx={{ mt: { xs: 2, sm: 3 } }}>
           Don’t have an account?{' '}
@@ -51,7 +51,7 @@ export default function Login() {
       </Box>
 
       {/* Copyright section*/}
-      {/* <Copyright /> */}
+      <Copyright />
     </Stack>
   );
 }

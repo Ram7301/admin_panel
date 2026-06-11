@@ -3,7 +3,7 @@
 // @mui
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 
-
+import { SessionProvider } from 'next-auth/react';
 
 // @project
 import Notistack from '@/components/third-party/Notistack';
@@ -16,11 +16,13 @@ export default function ProviderWrapper({ children }: Readonly<{ children: React
   return (
     <>
       <InitColorSchemeScript attribute="data-color-scheme" defaultMode="light" />
-      <ConfigProvider>
-        <ThemeCustomization>
-          <Notistack>{children}</Notistack>
-        </ThemeCustomization>
-      </ConfigProvider>
+      <SessionProvider>
+        <ConfigProvider>
+          <ThemeCustomization>
+            <Notistack>{children}</Notistack>
+          </ThemeCustomization>
+        </ConfigProvider>
+      </SessionProvider>
     </>
   );
 }
