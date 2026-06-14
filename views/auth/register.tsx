@@ -50,3 +50,11 @@ export default function Register() {
     </Stack>
   );
 }
+
+
+// NEXTAUTH_SECRET=j4cq7BqgjM3Z4TG4qhHmPUv8TyJADu
+// NEXTAUTH_URL=http://localhost:3000
+
+// # Backend API (optional, if using external API)
+// API_BASE_URL=http://localhost:5000
+
