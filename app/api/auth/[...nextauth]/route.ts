@@ -19,8 +19,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          // Option 1: Call external backend API
-          const response = await fetch(`${process.env.API_BASE_URL || 'http://localhost:5000'}/auth/login`, {
+          const response = await fetch(`${process.env.API_BASE_URL}/Auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -29,22 +28,29 @@ export const authOptions: NextAuthOptions = {
             })
           });
 
-          if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Invalid credentials');
+          const result = await response.json();
+
+          if (!response.ok || !result.success) {
+            throw new Error(result.message || 'Invalid credentials');
           }
 
-          const user = await response.json();
+          const userData = result.data;
+          console.log('✅ User authenticated:', userData.email);
 
-          // Return user object - this becomes JWT payload
+          // Return user object matching the API response structure
+          // These fields will be available in the jwt callback via the `user` parameter
           return {
-            id: user.id,
-            email: user.email,
-            name: user.name || user.email,
-            role: user.role || 'user',
-            image: user.avatar
+            id: String(userData.userId),
+            email: userData.email,
+            name: `${userData.firstName} ${userData.lastName}`.trim(),
+            role: userData.role,
+            accessToken: userData.accessToken,
+            accessTokenExpiry: userData.accessTokenExpiry,
+            refreshToken: userData.refreshToken,
+            refreshTokenExpiry: userData.refreshTokenExpiry
           };
         } catch (error) {
+          console.log('❌ Auth error:', error);
           throw new Error(error instanceof Error ? error.message : 'Authentication failed');
         }
       }
@@ -53,7 +59,7 @@ export const authOptions: NextAuthOptions = {
 
   // JWT Configuration
   session: {
-    strategy: 'jwt', // Use JWT instead of database
+    strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60 // 30 days
   },
 
@@ -65,12 +71,58 @@ export const authOptions: NextAuthOptions = {
   // Callbacks
   callbacks: {
     // Called whenever JWT is created or updated
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }) {
+      // Initial sign-in: copy user data into the token
       if (user) {
         token.id = user.id;
-        token.role = (user as any).role || 'user';
         token.email = user.email || undefined;
+        token.name = user.name;
+        token.role = (user as any).role || 'User';
+        token.accessToken = (user as any).accessToken;
+        token.accessTokenExpiry = (user as any).accessTokenExpiry;
+        token.refreshToken = (user as any).refreshToken;
+        token.refreshTokenExpiry = (user as any).refreshTokenExpiry;
       }
+
+      // Check if access token has expired and refresh it
+      if (token.accessTokenExpiry) {
+        const expiryTime = new Date(token.accessTokenExpiry as string).getTime();
+        const now = Date.now();
+
+        // If token expires within 60 seconds, refresh it
+        if (now >= expiryTime - 60 * 1000) {
+          console.log('🔄 Access token expired, refreshing...');
+          try {
+            const response = await fetch(`${process.env.API_BASE_URL}/Auth/refresh`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                refreshToken: token.refreshToken
+              })
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+              const refreshedData = result.data;
+              console.log('✅ Token refreshed successfully');
+
+              token.accessToken = refreshedData.accessToken;
+              token.accessTokenExpiry = refreshedData.accessTokenExpiry;
+              token.refreshToken = refreshedData.refreshToken;
+              token.refreshTokenExpiry = refreshedData.refreshTokenExpiry;
+              token.error = undefined;
+            } else {
+              console.error('❌ Token refresh failed:', result.message);
+              token.error = 'RefreshTokenError';
+            }
+          } catch (error) {
+            console.error('❌ Token refresh error:', error);
+            token.error = 'RefreshTokenError';
+          }
+        }
+      }
+
       return token;
     },
 
@@ -80,7 +132,11 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).id = token.id;
         (session.user as any).role = token.role;
         session.user.email = token.email as string;
+        session.user.name = token.name as string;
       }
+      // Expose accessToken and error to the client session
+      (session as any).accessToken = token.accessToken;
+      (session as any).error = token.error;
       return session;
     },
 

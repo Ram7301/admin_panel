@@ -17,8 +17,8 @@ export const viewport = {
 };
 
 export const metadata = {
-  title: `${branding.brandName} React MUI Dashboard Template`,
-  description: `${branding.brandName} React MUI Dashboard Template`
+  title: `${branding.brandName} Admin Panel`,
+  description: `${branding.brandName} Admin Panel`
 };
 
 /***************************  LAYOUT - ROOT  ***************************/

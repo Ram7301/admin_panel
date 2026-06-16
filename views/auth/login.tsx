@@ -20,18 +20,18 @@ export default function Login() {
         <Stack sx={{ gap: { xs: 1, sm: 1.5 }, textAlign: 'center', mb: { xs: 3, sm: 8 } }}>
           <Typography variant="h1">Sign In</Typography>
           <Typography variant="body1" color="text.secondary">
-            Welcome back! Select the method of login.
+            Welcome back!
           </Typography>
         </Stack>
 
         {/* Social login buttons */}
-        <AuthSocial />
+        {/* <AuthSocial /> */}
 
-        <Divider sx={{ my: { xs: 4, sm: 5 } }}>
+        {/* <Divider sx={{ my: { xs: 4, sm: 5 } }}>
           <Typography variant="body2" color="text.secondary">
             or continue with email
           </Typography>
-        </Divider>
+        </Divider> */}
 
         {/* Login form */}
         <AuthLogin />

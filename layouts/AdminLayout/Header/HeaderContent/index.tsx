@@ -23,8 +23,8 @@ export default function HeaderContent() {
         </Box>
         <Stack direction="row" sx={{ alignItems: 'center', gap: { xs: 1, sm: 1.5 } }}>
           <SearchBar />
-          <ThemeModeSwitcher />
-          <Notification />
+          {/* <ThemeModeSwitcher /> */}
+          {/* <Notification /> */}
           <Profile />
         </Stack>
       </Stack>

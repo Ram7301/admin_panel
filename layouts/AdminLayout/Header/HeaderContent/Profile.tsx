@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSession, signOut } from 'next-auth/react';
 
 // @mui
 import { useTheme } from '@mui/material/styles';
@@ -35,12 +36,6 @@ import { IconChevronRight, IconLanguage, IconLogout, IconSettings, IconTextDirec
 
 /***************************  HEADER - PROFILE DATA  ***************************/
 
-const profileData = {
-  avatar: { src: '/assets/images/users/avatar-1.png', size: AvatarSize.XS },
-  title: 'Erika Collins',
-  caption: 'Super Admin'
-};
-
 const languageList = [
   { key: ThemeI18n.EN, value: 'English' },
   { key: ThemeI18n.FR, value: 'French' },
@@ -52,9 +47,18 @@ const languageList = [
 
 export default function ProfileSection() {
   const theme = useTheme();
+  const { data: session } = useSession();
   const {
     state: { i18n }
   } = useConfig();
+
+  // Build profile data from session
+  const profileData = {
+    avatar: { src: '/assets/images/users/avatar-1.png', size: AvatarSize.XS },
+    title: session?.user?.email || 'User',
+    caption: session?.user?.role || 'User',
+    email: session?.user?.email
+  };
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [innerAnchorEl, setInnerAnchorEl] = useState<HTMLElement | null>(null);
@@ -75,6 +79,7 @@ export default function ProfileSection() {
 
   const logoutAccount = () => {
     setAnchorEl(null);
+    signOut({ redirect: true, callbackUrl: '/auth/login' });
   };
 
   const i18nHandler = (event: React.MouseEvent<HTMLElement>, key: ThemeI18n) => {
@@ -117,7 +122,7 @@ export default function ProfileSection() {
                   />
                   <Divider sx={{ my: 1 }} />
                   <List disablePadding>
-                    <ListItem
+                    {/* <ListItem
                       secondaryAction={
                         <Switch size="small" onChange={() => enqueueSnackbar('Upgrade to pro for RTL')} />
                       }
@@ -127,8 +132,8 @@ export default function ProfileSection() {
                         <IconTextDirectionLtr size={16} />
                       </ListItemIcon>
                       <ListItemText primary="RTL" />
-                    </ListItem>
-                    <ListItemButton sx={buttonStyle} onClick={handleInnerActionClick}>
+                    </ListItem> */}
+                    {/* <ListItemButton sx={buttonStyle} onClick={handleInnerActionClick}>
                       <ListItemIcon>
                         <IconLanguage size={16} />
                       </ListItemIcon>
@@ -189,7 +194,7 @@ export default function ProfileSection() {
                         <IconSettings size={16} />
                       </ListItemIcon>
                       <ListItemText primary="Settings" />
-                    </ListItemButton>
+                    </ListItemButton> */}
                     <ListItem disablePadding>
                       <Button
                         fullWidth
