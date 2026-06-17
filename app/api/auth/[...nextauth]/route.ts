@@ -4,6 +4,27 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 
 /***************************  NEXTAUTH CONFIGURATION  ***************************/
 
+/*******************************************************************************
+ * LOCAL USERS ARRAY (temporary – remove when re-enabling API login)
+ * Add/remove users here as needed during development.
+ ******************************************************************************/
+const LOCAL_USERS = [
+  {
+    id: '1',
+    email: 'admin@admin.com',
+    password: 'Admin@123',
+    name: 'Admin User',
+    role: 'Admin'
+  },
+  {
+    id: '2',
+    email: 'user@user.com',
+    password: 'user@123',
+    name: 'Regular User',
+    role: 'User'
+  }
+];
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -18,6 +39,37 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Email and password required');
         }
 
+        // ──────────────────────────────────────────────────────────────────────
+        // LOCAL LOGIN – match against LOCAL_USERS array
+        // ──────────────────────────────────────────────────────────────────────
+        const user = LOCAL_USERS.find(
+          (u) =>
+            u.email.toLowerCase() === credentials.email.toLowerCase() &&
+            u.password === credentials.password
+        );
+
+        if (!user) {
+          throw new Error('Invalid email or password');
+        }
+
+        console.log('✅ User authenticated (local):', user.email);
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          accessToken: 'local-dev-token',
+          accessTokenExpiry: '',
+          refreshToken: '',
+          refreshTokenExpiry: ''
+        };
+
+        // ──────────────────────────────────────────────────────────────────────
+        // ORIGINAL API LOGIN – uncomment below & remove local block above
+        // to re-enable API-based authentication
+        // ──────────────────────────────────────────────────────────────────────
+        /*
         try {
           const response = await fetch(`${process.env.API_BASE_URL}/Auth/login`, {
             method: 'POST',
@@ -37,8 +89,6 @@ export const authOptions: NextAuthOptions = {
           const userData = result.data;
           console.log('✅ User authenticated:', userData.email);
 
-          // Return user object matching the API response structure
-          // These fields will be available in the jwt callback via the `user` parameter
           return {
             id: String(userData.userId),
             email: userData.email,
@@ -53,6 +103,7 @@ export const authOptions: NextAuthOptions = {
           console.log('❌ Auth error:', error);
           throw new Error(error instanceof Error ? error.message : 'Authentication failed');
         }
+        */
       }
     })
   ],
@@ -84,6 +135,11 @@ export const authOptions: NextAuthOptions = {
         token.refreshTokenExpiry = (user as any).refreshTokenExpiry;
       }
 
+      // ────────────────────────────────────────────────────────────────────
+      // ORIGINAL TOKEN REFRESH – commented out for local login
+      // Uncomment when re-enabling API login
+      // ────────────────────────────────────────────────────────────────────
+      /*
       // Check if access token has expired and refresh it
       if (token.accessTokenExpiry) {
         const expiryTime = new Date(token.accessTokenExpiry as string).getTime();
@@ -122,6 +178,7 @@ export const authOptions: NextAuthOptions = {
           }
         }
       }
+      */
 
       return token;
     },

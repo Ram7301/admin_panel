@@ -32,9 +32,8 @@ import { useAuth } from '@/hooks/useAuth';
 
 // Mock user credentials
 const userCredentials = [
-  { title: 'Super Admin', email: 'super_admin@saasable.io', password: 'Super@123' },
-  { title: 'Admin', email: 'admin@saasable.io', password: 'Admin@123' },
-  { title: 'User', email: 'user@saasable.io', password: 'User@123' }
+  { title: 'Super Admin', email: 'admin@admin.com', password: 'Admin@123' },
+  { title: 'Admin', email: 'user@user.com', password: 'Aser@123' }
 ];
 
 interface LoginFormData {
@@ -67,7 +66,7 @@ export default function AuthLogin({ inputSx }: AuthLoginProps) {
     handleSubmit,
     reset,
     formState: { errors }
-  } = useForm<LoginFormData>({ defaultValues: { email: 'super_admin@saasable.io', password: 'Super@123' } });
+  } = useForm<LoginFormData>({ defaultValues: { email: 'admin@admin.com', password: 'Admin@123' } });
 
   const formData = watch();
 

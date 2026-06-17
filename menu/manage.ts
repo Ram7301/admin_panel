@@ -14,6 +14,13 @@ const manage: NavItemType = {
       type: 'item',
       url: '/dashboard',
       icon: 'IconLayoutGrid'
+    },
+    {
+      id: 'driver-payments',
+      title: 'Driver Payments',
+      type: 'item',
+      url: '/driver-payments',
+      icon: 'IconTruck'
     }
   ]
 };

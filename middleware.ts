@@ -1,10 +1,10 @@
-import { withAuth } from 'next-auth/middleware';
-import { NextRequest, NextResponse } from 'next/server';
+import { withAuth, type NextRequestWithAuth } from 'next-auth/middleware';
+import { NextResponse } from 'next/server';
 
 /***************************  NEXTAUTH MIDDLEWARE  ***************************/
 
 export default withAuth(
-  function middleware(request: NextRequest) {
+  function middleware(request: NextRequestWithAuth) {
     const token = request.nextauth.token;
     const pathname = request.nextUrl.pathname;
 
@@ -22,7 +22,7 @@ export default withAuth(
         const pathname = req.nextUrl.pathname;
 
         // Protect admin/dashboard routes - must have token
-        if (pathname.startsWith('/dashboard') || pathname.startsWith('/(admin)')) {
+        if (pathname.startsWith('/dashboard') || pathname.startsWith('/(admin)') || pathname.startsWith('/driver-payments')) {
           return !!token;
         }
 
@@ -42,6 +42,7 @@ export const config = {
     // Protect admin routes
     '/dashboard/:path*',
     '/(admin)/:path*',
+    '/driver-payments/:path*',
     // Allow auth pages
     '/auth/:path*'
   ]
