@@ -36,7 +36,7 @@ export default function Login() {
         {/* Login form */}
         <AuthLogin />
 
-        <Typography variant="body2" color="text.secondary" sx={{ mt: { xs: 2, sm: 3 } }}>
+        {/* <Typography variant="body2" color="text.secondary" sx={{ mt: { xs: 2, sm: 3 } }}>
           Don’t have an account?{' '}
           <Link
             component={NextLink}
@@ -47,7 +47,7 @@ export default function Login() {
           >
             Sign Up
           </Link>
-        </Typography>
+        </Typography> */}
       </Box>
 
       {/* Copyright section*/}

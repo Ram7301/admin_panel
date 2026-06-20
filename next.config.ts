@@ -9,7 +9,8 @@ const cspHeader = `
     base-uri 'self';
     form-action 'self';
     frame-ancestors 'self';
-    connect-src 'self' https://cdn.jsdelivr.net;
+    connect-src 'self' https://cdn.jsdelivr.net http://localhost:5138 
+https://ivs-api.runasp.net;
 `;
 
 const nextConfig: NextConfig = {

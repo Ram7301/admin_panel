@@ -42,34 +42,34 @@ export const authOptions: NextAuthOptions = {
         // ──────────────────────────────────────────────────────────────────────
         // LOCAL LOGIN – match against LOCAL_USERS array
         // ──────────────────────────────────────────────────────────────────────
-        const user = LOCAL_USERS.find(
-          (u) =>
-            u.email.toLowerCase() === credentials.email.toLowerCase() &&
-            u.password === credentials.password
-        );
+        // const user = LOCAL_USERS.find(
+        //   (u) =>
+        //     u.email.toLowerCase() === credentials.email.toLowerCase() &&
+        //     u.password === credentials.password
+        // );
 
-        if (!user) {
-          throw new Error('Invalid email or password');
-        }
+        // if (!user) {
+        //   throw new Error('Invalid email or password');
+        // }
 
-        console.log('✅ User authenticated (local):', user.email);
+        // console.log('✅ User authenticated (local):', user.email);
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          accessToken: 'local-dev-token',
-          accessTokenExpiry: '',
-          refreshToken: '',
-          refreshTokenExpiry: ''
-        };
+        // return {
+        //   id: user.id,
+        //   email: user.email,
+        //   name: user.name,
+        //   role: user.role,
+        //   accessToken: 'local-dev-token',
+        //   accessTokenExpiry: '',
+        //   refreshToken: '',
+        //   refreshTokenExpiry: ''
+        // };
 
         // ──────────────────────────────────────────────────────────────────────
         // ORIGINAL API LOGIN – uncomment below & remove local block above
         // to re-enable API-based authentication
         // ──────────────────────────────────────────────────────────────────────
-        /*
+    
         try {
           const response = await fetch(`${process.env.API_BASE_URL}/Auth/login`, {
             method: 'POST',
@@ -82,12 +82,14 @@ export const authOptions: NextAuthOptions = {
 
           const result = await response.json();
 
+          console.log('result-------',result)
+
           if (!response.ok || !result.success) {
             throw new Error(result.message || 'Invalid credentials');
           }
 
           const userData = result.data;
-          console.log('✅ User authenticated:', userData.email);
+ 
 
           return {
             id: String(userData.userId),
@@ -103,7 +105,7 @@ export const authOptions: NextAuthOptions = {
           console.log('❌ Auth error:', error);
           throw new Error(error instanceof Error ? error.message : 'Authentication failed');
         }
-        */
+        
       }
     })
   ],
@@ -139,7 +141,7 @@ export const authOptions: NextAuthOptions = {
       // ORIGINAL TOKEN REFRESH – commented out for local login
       // Uncomment when re-enabling API login
       // ────────────────────────────────────────────────────────────────────
-      /*
+  
       // Check if access token has expired and refresh it
       if (token.accessTokenExpiry) {
         const expiryTime = new Date(token.accessTokenExpiry as string).getTime();
@@ -178,7 +180,7 @@ export const authOptions: NextAuthOptions = {
           }
         }
       }
-      */
+
 
       return token;
     },

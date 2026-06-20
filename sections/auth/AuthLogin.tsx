@@ -21,8 +21,7 @@ import type { SxProps, Theme } from '@mui/material/styles';
 // @third-party
 import { useForm, type RegisterOptions } from 'react-hook-form';
 
-// @project
-import { APP_DEFAULT_PATH } from '@/config';
+
 import { NextLink } from '@/components/routes';
 import { emailSchema, passwordSchema } from '@/utils/validation-schema/common';
 
@@ -56,7 +55,6 @@ export default function AuthLogin({ inputSx }: AuthLoginProps) {
   const theme = useTheme();
   const { login, isLoading } = useAuth();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [loginError, setLoginError] = useState('');
 
   // Initialize react-hook-form
@@ -73,16 +71,15 @@ export default function AuthLogin({ inputSx }: AuthLoginProps) {
   // Handle form submission
   const onSubmit = async (formData: LoginFormData) => {
     try {
+      ;
       setLoginError('');
       const result = await login(formData.email, formData.password);
 
-      if (result.ok) {
-        // NextAuth session is created automatically
-        router.push('/dashboard');
-      }
+      console.log(result)
     } catch (error) {
       setLoginError(error instanceof Error ? error.message : 'Login failed');
     }
+
   };
   const commonIconProps = { size: 16, color: theme.vars.palette.grey[700] };
 
@@ -134,7 +131,7 @@ export default function AuthLogin({ inputSx }: AuthLoginProps) {
             />
             <Stack direction="row" sx={{ alignItems: 'center', justifyContent: errors.password ? 'space-between' : 'flex-end', width: 1 }}>
               {errors.password?.message && <FormHelperText error>{errors.password.message}</FormHelperText>}
-              <Link
+              {/* <Link
                 component={NextLink}
                 underline="hover"
                 variant="caption"
@@ -142,7 +139,7 @@ export default function AuthLogin({ inputSx }: AuthLoginProps) {
                 sx={{ '&:hover': { color: 'primary.dark' }, mt: 0.75, textAlign: 'right' }}
               >
                 Forgot Password?
-              </Link>
+              </Link> */}
             </Stack>
           </Box>
         </Stack>
@@ -151,8 +148,8 @@ export default function AuthLogin({ inputSx }: AuthLoginProps) {
           type="submit"
           color="primary"
           variant="contained"
-          disabled={isProcessing}
-          endIcon={isProcessing && <CircularProgress color="secondary" size={16} />}
+          disabled={isLoading}
+          endIcon={isLoading && <CircularProgress color="secondary" size={16} />}
           sx={{ minWidth: 120, mt: { xs: 1, sm: 4 }, '& .MuiButton-endIcon': { ml: 1 } }}
         >
           Sign In

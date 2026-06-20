@@ -27,14 +27,14 @@ export default function Copyright() {
     <Stack sx={{ gap: 1, width: 'fit-content', mx: 'auto' }}>
       <Stack direction="row" sx={{ justifyContent: 'center', gap: { xs: 1, sm: 1.5 }, textAlign: 'center' }}>
         <Typography variant="caption" color="text.secondary" sx={copyrightSX}>
-          © 2024 {branding.brandName}
+          © 2026 {branding.brandName}
         </Typography>
         <Divider orientation="vertical" flexItem sx={copyrightSX} />
-        <Link {...linkProps} href="https://saasable.io/privacy-policy">
+        <Link {...linkProps} href="">
           Privacy Policy
         </Link>
         <Divider orientation="vertical" flexItem />
-        <Link {...linkProps} href="https://mui.com/store/terms/">
+        <Link {...linkProps} href="">
           Terms & Conditions
         </Link>
       </Stack>

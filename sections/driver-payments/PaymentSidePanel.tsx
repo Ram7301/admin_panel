@@ -446,8 +446,26 @@ export default function PaymentSidePanel({ open, onClose, payment, onSave, savin
 
 /***************************  HELPERS  ***************************/
 
+function formatDateForInput(dateStr: string | null | undefined): string {
+  if (!dateStr) return '';
+  if (dateStr.includes('T')) {
+    return dateStr.split('T')[0];
+  }
+  if (dateStr.includes(' ')) {
+    return dateStr.split(' ')[0];
+  }
+  return dateStr;
+}
+
 function getDefaults(payment: DriverPayment | null): Partial<DriverPayment> {
-  if (payment) return { ...payment };
+  if (payment) {
+    return {
+      ...payment,
+      date: formatDateForInput(payment.date),
+      advanceDate: formatDateForInput(payment.advanceDate),
+      balanceDate: formatDateForInput(payment.balanceDate)
+    };
+  }
   return {
     sno: null,
     roNum: '',

@@ -7,17 +7,25 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { alpha, useTheme } from '@mui/material/styles';
-import { DataGrid, type GridColDef, type GridRenderCellParams } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  Toolbar,
+  GridToolbarExport,
+  GridToolbarFilterButton,
+  GridToolbarColumnsButton,
+  QuickFilter,
+  QuickFilterControl,
+  type GridColDef,
+  type GridRenderCellParams
+} from '@mui/x-data-grid';
 
 // @tabler
-import { IconPlus, IconSearch, IconEdit, IconTrash, IconTruck } from '@tabler/icons-react';
+import { IconPlus, IconEdit, IconTrash, IconTruck } from '@tabler/icons-react';
 
 // @project
 import { useDriverPayments } from '@/hooks/useDriverPayments';
@@ -30,27 +38,9 @@ export default function DriverPaymentsSection() {
   const theme = useTheme();
   const { payments, isLoading, createPayment, updatePayment, deletePayment } = useDriverPayments();
 
-  const [search, setSearch] = useState('');
   const [panelOpen, setPanelOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<DriverPayment | null>(null);
   const [saving, setSaving] = useState(false);
-
-  // Filter payments by search
-  const filteredPayments = useMemo(() => {
-    if (!search.trim()) return payments;
-    const q = search.toLowerCase();
-    return payments.filter(
-      (p) =>
-        p.consignee?.toLowerCase().includes(q) ||
-        p.consigner?.toLowerCase().includes(q) ||
-        p.vehicleNo?.toLowerCase().includes(q) ||
-        p.to?.toLowerCase().includes(q) ||
-        p.from?.toLowerCase().includes(q) ||
-        p.roNum?.toLowerCase().includes(q) ||
-        p.placedBy?.toLowerCase().includes(q) ||
-        String(p.sno).includes(q)
-    );
-  }, [payments, search]);
 
   // Summary stats
   const stats = useMemo(() => {
@@ -106,20 +96,61 @@ export default function DriverPaymentsSection() {
     [deletePayment]
   );
 
+  // Custom toolbar rendered inside the DataGrid
+  // Must be a stable component reference — useMemo preserves identity across renders
+  const CustomToolbar = useMemo(
+    () =>
+      function PaymentsToolbar() {
+        return (
+          <Toolbar
+            style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '12px 16px',
+              height: 'auto',
+              minHeight: 'auto',
+              flex: 'none'
+            }}
+          >
+            <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+              <IconTruck size={22} color={theme.palette.primary.main} />
+              <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                Driver Payments
+              </Typography>
+              <Chip label={`${payments.length} records`} size="small" variant="outlined" />
+            </Stack>
+
+            <Stack direction="row" spacing={1} sx={{ alignItems: 'center', flexWrap: 'wrap' }} useFlexGap>
+              <QuickFilter debounceMs={300} defaultExpanded>
+                <QuickFilterControl
+                  placeholder="Search..."
+                  size="small"
+                />
+              </QuickFilter>
+              {/* <GridToolbarColumnsButton />
+              <GridToolbarFilterButton />
+              <GridToolbarExport /> */}
+              <Button
+                variant="contained"
+                size="small"
+                startIcon={<IconPlus size={16} />}
+                onClick={handleCreate}
+                sx={{ whiteSpace: 'nowrap' }}
+              >
+                Add Payment
+              </Button>
+            </Stack>
+          </Toolbar>
+        );
+      },
+    [theme, payments.length, handleCreate]
+  );
+
   // Column definitions
   const columns: GridColDef<DriverPayment>[] = useMemo(
     () => [
-      // {
-      //   field: 'sno',
-      //   headerName: 'S.No',
-      //   width: 70,
-      //   renderCell: (params: GridRenderCellParams<DriverPayment>) =>
-      //     params.value ? (
-      //       <Typography variant="body2" sx={{ fontWeight: 600 }}>{params.value}</Typography>
-      //     ) : (
-      //       <Typography variant="body2" sx={{ color: 'text.disabled' }}>—</Typography>
-      //     )
-      // },
       { field: 'roNum', headerName: 'RO No.', width: 120 },
       { field: 'inNo', headerName: 'Inv No.', width: 120 },
       { field: 'lrNo', headerName: 'LR', width: 60 },
@@ -160,7 +191,7 @@ export default function DriverPaymentsSection() {
         cellClassName: 'calculated-cell',
         renderCell: (params: GridRenderCellParams<DriverPayment>) =>
           params.value ? (
-            <Typography variant="body2" sx={{ fontWeight: 600, color: 'primary.main' }}>
+            <Typography variant="body2" sx={{ fontWeight: 600, color: 'primary.main', height: '100%', display: 'flex', alignItems: 'center', flex: 1, justifyContent: 'flex-end' }}>
               ₹{Number(params.value).toLocaleString('en-IN', { minimumFractionDigits: 0 })}
             </Typography>
           ) : '—'
@@ -193,7 +224,7 @@ export default function DriverPaymentsSection() {
           return (
             <Typography
               variant="body2"
-              sx={{ fontWeight: 500, color: val < 0 ? 'error.main' : val === 0 ? 'text.disabled' : 'info.main' }}
+              sx={{ fontWeight: 500, color: val < 0 ? 'error.main' : val === 0 ? 'text.disabled' : 'info.main', height: '100%', display: 'flex', alignItems: 'center', flex: 1, justifyContent: 'flex-end' }}
             >
               ₹{val.toLocaleString('en-IN')}
             </Typography>
@@ -212,7 +243,7 @@ export default function DriverPaymentsSection() {
           return (
             <Typography
               variant="body2"
-              sx={{ fontWeight: 600, color: val >= 0 ? 'success.main' : 'error.main' }}
+              sx={{ fontWeight: 600, color: val >= 0 ? 'success.main' : 'error.main', height: '100%', display: 'flex', alignItems: 'center', flex: 1, justifyContent: 'flex-end' }}
             >
               ₹{val.toLocaleString('en-IN')}
             </Typography>
@@ -234,7 +265,7 @@ export default function DriverPaymentsSection() {
               size="small"
               color={val >= 20 ? 'success' : val >= 15 ? 'warning' : 'error'}
               variant="outlined"
-              sx={{ fontWeight: 600, fontSize: '0.75rem' }}
+              sx={{ fontWeight: 600, fontSize: '0.75rem', height: '40px' }}
             />
           );
         }
@@ -251,7 +282,7 @@ export default function DriverPaymentsSection() {
               size="small"
               color={params.value === 'COLLECTED' ? 'success' : 'default'}
               variant="filled"
-              sx={{ fontSize: '0.7rem' }}
+              sx={{ fontSize: '0.7rem', height: '40px' }}
             />
           );
         }
@@ -295,79 +326,35 @@ export default function DriverPaymentsSection() {
         <StatCard label="POD Collected" value={String(stats.collected)} color={theme.palette.success.main} />
       </Stack>
 
-      {/* Toolbar */}
-      <Card variant="outlined" sx={{ mb: 0, borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }}>
-        <Stack
-          direction="row"
-          spacing={2}
-          sx={{ p: 2, alignItems: 'center', justifyContent: 'space-between' }}
-        >
-          <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-            <IconTruck size={22} color={theme.palette.primary.main} />
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              Driver Payments
-            </Typography>
-            <Chip label={`${filteredPayments.length} records`} size="small" variant="outlined" />
-          </Stack>
-
-          <Stack direction="row" spacing={1.5}>
-            <TextField
-              size="small"
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <IconSearch size={18} />
-                    </InputAdornment>
-                  )
-                }
-              }}
-              sx={{ width: 240 }}
-            />
-            <Button
-              variant="contained"
-              startIcon={<IconPlus size={18} />}
-              onClick={handleCreate}
-              sx={{ whiteSpace: 'nowrap' }}
-            >
-              Add Payment
-            </Button>
-          </Stack>
-        </Stack>
-      </Card>
-
-      {/* DataGrid */}
+      {/* DataGrid with Custom Toolbar */}
       <Card
         variant="outlined"
+        elevation={3}
         sx={{
-          borderTop: 0,
-          borderTopLeftRadius: 0,
-          borderTopRightRadius: 0,
           '& .calculated-cell': {
             bgcolor: alpha(theme.palette.primary.main, 0.03)
           }
         }}
       >
         <DataGrid
-          rows={filteredPayments}
+          rows={payments}
           columns={columns}
           loading={isLoading}
+          showToolbar
+          slots={{ toolbar: CustomToolbar }}
           initialState={{
             pagination: { paginationModel: { pageSize: 25 } }
           }}
           pageSizeOptions={[10, 25, 50, 100]}
           disableRowSelectionOnClick
-          density="compact"
           onRowDoubleClick={(params) => handleEdit(params.row as DriverPayment)}
-          // getRowClassName={(params) =>
-          //   !(params.row as DriverPayment).sno ? 'sub-row' : ''
-          // }
           sx={{
             border: 0,
-            minHeight: 500,
+            height: 'calc(100vh - 250px)',
+            '& .MuiDataGrid-toolbar': {
+              bgcolor: alpha(theme.palette.primary.main, 0.02),
+              borderBottom: `1px solid ${theme.palette.divider}`
+            },
             '& .MuiDataGrid-columnHeaders': {
               bgcolor: alpha(theme.palette.primary.main, 0.04),
               borderBottom: `2px solid ${theme.palette.divider}`
@@ -377,10 +364,6 @@ export default function DriverPaymentsSection() {
               fontSize: '0.8rem',
               textTransform: 'uppercase',
               letterSpacing: 0.5
-            },
-            '& .sub-row': {
-              bgcolor: alpha(theme.palette.action.hover, 0.3),
-              fontStyle: 'italic'
             },
             '& .MuiDataGrid-row:hover': {
               bgcolor: alpha(theme.palette.primary.main, 0.04)

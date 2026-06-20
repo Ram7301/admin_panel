@@ -27,10 +27,10 @@ interface AuthLayoutProps {
 export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
     <Grid container sx={{ height: '100vh' }}>
-      <Grid size={{ xs: 12, md: 6, lg: 7 }} sx={{ p: { xs: 3, sm: 7 } }}>
+      <Grid size={{ xs: 12, }} sx={{ p: { xs: 3, sm: 7 } }}>
         {children}
       </Grid>
-      <Grid size={{ xs: 12, md: 6, lg: 5 }} sx={{ bgcolor: 'grey.100', pt: 7, display: { xs: 'none', md: 'block' } }}>
+      {/* <Grid size={{ xs: 12, md: 6, lg: 5 }} sx={{ bgcolor: 'grey.100', pt: 7, display: { xs: 'none', md: 'block' } }}>
         <Stack sx={{ height: 1, justifyContent: 'space-between' }}>
           <Stack sx={{ alignItems: 'center', gap: 2 }}>
             <LogoMain />
@@ -55,7 +55,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
             />
           </Box>
         </Stack>
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 }

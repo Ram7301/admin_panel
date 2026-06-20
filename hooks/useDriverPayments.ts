@@ -1,9 +1,8 @@
 'use client';
 
 import useSWR from 'swr';
+import axiosInstance, { axiosFetcher } from '@/utils/axios';
 import type { DriverPayment } from '@/types/driverPayment';
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 /***************************  HOOK - DRIVER PAYMENTS  ***************************/
 
@@ -11,49 +10,39 @@ export function useDriverPayments() {
   const { data, error, isLoading, mutate } = useSWR<{
     success: boolean;
     data: DriverPayment[];
-    total: number;
-  }>('/api/driver-payments', fetcher);
+    message: string;
+  }>('/DriverPayments', axiosFetcher, {
+    revalidateOnFocus: false,      // Don't refetch when tab regains focus
+    revalidateOnReconnect: false,  // Don't refetch on network reconnect
+    dedupingInterval: 10000,       // Deduplicate requests within 10s
+  });
 
   const createPayment = async (payment: Partial<DriverPayment>) => {
-    const res = await fetch('/api/driver-payments', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payment)
-    });
-    const result = await res.json();
-    if (result.success) {
+    const res = await axiosInstance.post('/DriverPayments', payment);
+    if (res.data.success) {
       mutate();
     }
-    return result;
+    return res.data;
   };
 
   const updatePayment = async (id: number, payment: Partial<DriverPayment>) => {
-    const res = await fetch(`/api/driver-payments/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payment)
-    });
-    const result = await res.json();
-    if (result.success) {
+    const res = await axiosInstance.patch(`/DriverPayments/${id}`, payment);
+    if (res.data.success) {
       mutate();
     }
-    return result;
+    return res.data;
   };
 
   const deletePayment = async (id: number) => {
-    const res = await fetch(`/api/driver-payments/${id}`, {
-      method: 'DELETE'
-    });
-    const result = await res.json();
-    if (result.success) {
+    const res = await axiosInstance.delete(`/DriverPayments/${id}`);
+    if (res.data.success) {
       mutate();
     }
-    return result;
+    return res.data;
   };
 
   return {
     payments: data?.data ?? [],
-    total: data?.total ?? 0,
     isLoading,
     isError: !!error,
     mutate,

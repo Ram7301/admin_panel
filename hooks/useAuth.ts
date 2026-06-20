@@ -30,7 +30,7 @@ export function useAuth(): UseAuthReturn {
       const result = await signIn('credentials', {
         email,
         password,
-        redirect: false // Don't auto-redirect
+        redirect: true
       });
 
       if (!result?.ok) {
