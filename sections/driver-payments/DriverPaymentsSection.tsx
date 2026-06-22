@@ -11,6 +11,11 @@ import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
 import { alpha, useTheme } from '@mui/material/styles';
 import {
   DataGrid,
@@ -31,16 +36,21 @@ import { IconPlus, IconEdit, IconTrash, IconTruck } from '@tabler/icons-react';
 import { useDriverPayments } from '@/hooks/useDriverPayments';
 import type { DriverPayment } from '@/types/driverPayment';
 import PaymentSidePanel from './PaymentSidePanel';
+import { useSnackbar } from 'notistack';
 
 /***************************  COMPONENT  ***************************/
 
 export default function DriverPaymentsSection() {
   const theme = useTheme();
+  const { enqueueSnackbar } = useSnackbar();
   const { payments, isLoading, createPayment, updatePayment, deletePayment } = useDriverPayments();
 
   const [panelOpen, setPanelOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<DriverPayment | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [paymentToDelete, setPaymentToDelete] = useState<number | null>(null);
 
   // Summary stats
   const stats = useMemo(() => {
@@ -76,25 +86,43 @@ export default function DriverPaymentsSection() {
       try {
         if (selectedPayment) {
           await updatePayment(selectedPayment.id, data);
+          enqueueSnackbar('Payment updated successfully', { variant: 'success' });
         } else {
           await createPayment(data);
+          enqueueSnackbar('Payment added successfully', { variant: 'success' });
         }
         handleClose();
+      } catch (error) {
+        enqueueSnackbar('Failed to save payment', { variant: 'error' });
       } finally {
         setSaving(false);
       }
     },
-    [selectedPayment, updatePayment, createPayment, handleClose]
+    [selectedPayment, updatePayment, createPayment, handleClose, enqueueSnackbar]
   );
 
-  const handleDelete = useCallback(
-    async (id: number) => {
-      if (window.confirm('Delete this payment record?')) {
-        await deletePayment(id);
-      }
-    },
-    [deletePayment]
-  );
+  const handleDelete = useCallback((id: number) => {
+    setPaymentToDelete(id);
+    setDeleteDialogOpen(true);
+  }, []);
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (paymentToDelete === null) return;
+    try {
+      await deletePayment(paymentToDelete);
+      enqueueSnackbar('Payment deleted successfully', { variant: 'success' });
+    } catch (error) {
+      enqueueSnackbar('Failed to delete payment', { variant: 'error' });
+    } finally {
+      setDeleteDialogOpen(false);
+      setPaymentToDelete(null);
+    }
+  }, [deletePayment, paymentToDelete, enqueueSnackbar]);
+
+  const handleCancelDelete = useCallback(() => {
+    setDeleteDialogOpen(false);
+    setPaymentToDelete(null);
+  }, []);
 
   // Custom toolbar rendered inside the DataGrid
   // Must be a stable component reference — useMemo preserves identity across renders
@@ -130,8 +158,8 @@ export default function DriverPaymentsSection() {
                 />
               </QuickFilter>
               {/* <GridToolbarColumnsButton />
-              <GridToolbarFilterButton />
-              <GridToolbarExport /> */}
+              <GridToolbarFilterButton />*/}
+              <GridToolbarExport />
               <Button
                 variant="contained"
                 size="small"
@@ -151,28 +179,31 @@ export default function DriverPaymentsSection() {
   // Column definitions
   const columns: GridColDef<DriverPayment>[] = useMemo(
     () => [
-      { field: 'roNum', headerName: 'RO No.', width: 120 },
-      { field: 'inNo', headerName: 'Inv No.', width: 120 },
-      { field: 'lrNo', headerName: 'LR', width: 60 },
+      { field: 'id', headerName: 'ID', minWidth: 50 },
+      { field: 'roNum', headerName: 'RO No.', minWidth: 120 },
+      { field: 'inNo', headerName: 'Inv No.', minWidth: 120 },
+      { field: 'lrNo', headerName: 'LR', minWidth: 60 },
       {
         field: 'date',
         headerName: 'Date',
-        width: 105,
+        minWidth: 105,
         renderCell: (params: GridRenderCellParams<DriverPayment>) => {
           if (!params.value) return '—';
           const d = new Date(params.value as string);
           return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
         }
       },
-      { field: 'from', headerName: 'From', width: 110 },
-      { field: 'to', headerName: 'To', width: 120 },
-      { field: 'consignee', headerName: 'Consignee', width: 170, flex: 1 },
-      { field: 'vehicleNo', headerName: 'Vehicle', width: 120 },
-      { field: 'vehicleType', headerName: 'Type', width: 70 },
+      { field: 'from', headerName: 'From', minWidth: 110 },
+      { field: 'to', headerName: 'To', minWidth: 120 },
+      { field: 'consignee', headerName: 'Consignee', minWidth: 170, flex: 1 },
+      { field: 'consigner', headerName: 'Consigner', minWidth: 170, flex: 1 },
+      { field: 'vehicleNo', headerName: 'Vehicle No', minWidth: 120 },
+      { field: 'driverNo', headerName: 'Driver No', minWidth: 100 },
+      { field: 'vehicleType', headerName: 'Type', minWidth: 70 },
       {
         field: 'perTonCost',
-        headerName: '₹/Ton',
-        width: 85,
+        headerName: 'Per Ton Cost',
+        minWidth: 130,
         type: 'number',
         renderCell: (params: GridRenderCellParams<DriverPayment>) =>
           params.value ? `₹${Number(params.value).toLocaleString('en-IN')}` : '—'
@@ -185,7 +216,7 @@ export default function DriverPaymentsSection() {
       },
       {
         field: 'hire',
-        headerName: 'Hire ₹',
+        headerName: 'Hire',
         width: 110,
         type: 'number',
         cellClassName: 'calculated-cell',
@@ -198,7 +229,7 @@ export default function DriverPaymentsSection() {
       },
       {
         field: 'cost',
-        headerName: 'Cost ₹',
+        headerName: 'Cost',
         width: 100,
         type: 'number',
         renderCell: (params: GridRenderCellParams<DriverPayment>) =>
@@ -206,7 +237,15 @@ export default function DriverPaymentsSection() {
       },
       {
         field: 'advance',
-        headerName: 'Advance ₹',
+        headerName: 'Advance',
+        width: 100,
+        type: 'number',
+        renderCell: (params: GridRenderCellParams<DriverPayment>) =>
+          params.value ? `₹${Number(params.value).toLocaleString('en-IN')}` : '—'
+      },
+      {
+        field: 'deducAmt',
+        headerName: 'Deducted',
         width: 100,
         type: 'number',
         renderCell: (params: GridRenderCellParams<DriverPayment>) =>
@@ -214,7 +253,7 @@ export default function DriverPaymentsSection() {
       },
       {
         field: 'balance',
-        headerName: 'Balance ₹',
+        headerName: 'Balance',
         width: 100,
         type: 'number',
         cellClassName: 'calculated-cell',
@@ -233,7 +272,7 @@ export default function DriverPaymentsSection() {
       },
       {
         field: 'profit',
-        headerName: 'Profit ₹',
+        headerName: 'Profit',
         width: 100,
         type: 'number',
         cellClassName: 'calculated-cell',
@@ -296,7 +335,7 @@ export default function DriverPaymentsSection() {
         filterable: false,
         disableColumnMenu: true,
         renderCell: (params: GridRenderCellParams<DriverPayment>) => (
-          <Stack direction="row" spacing={0.5}>
+          <Stack direction="row" spacing={0.5} sx={{ height: '100%', display: 'flex', alignItems: 'center', flex: 1, justifyContent: 'flex-end' }}>
             <Tooltip title="Edit">
               <IconButton size="small" onClick={() => handleEdit(params.row)} color="primary">
                 <IconEdit size={16} />
@@ -383,6 +422,24 @@ export default function DriverPaymentsSection() {
         onSave={handleSave}
         saving={saving}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onClose={handleCancelDelete}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this payment record? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDelete} color="inherit">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmDelete} color="error" variant="contained" autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

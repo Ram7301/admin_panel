@@ -163,13 +163,13 @@ export default function PaymentSidePanel({ open, onClose, payment, onSave, savin
           </Typography>
 
           <Stack direction="row" spacing={2}>
-            <Controller
+            {/* <Controller
               name="sno"
               control={control}
               render={({ field }) => (
                 <TextField {...field} value={field.value ?? ''} label="S.No" size="small" type="number" fullWidth />
               )}
-            />
+            /> */}
             <Controller
               name="lrNo"
               control={control}

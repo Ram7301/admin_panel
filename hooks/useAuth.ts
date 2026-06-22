@@ -11,7 +11,7 @@ export interface UseAuthReturn {
   isAuthenticated: boolean;
   isLoading: boolean;
   user: Session['user'] | null;
-  login: (email: string, password: string) => Promise<any>;
+  login: (email: string, password: string,callbackUrl:string) => Promise<any>;
   logout: () => Promise<void>;
   status: 'authenticated' | 'unauthenticated' | 'loading';
 }
@@ -26,15 +26,16 @@ export function useAuth(): UseAuthReturn {
 
   // Login with email and password
   const login = useCallback(
-    async (email: string, password: string) => {
+    async (email: string, password: string,callbackUrl:string) => {
       const result = await signIn('credentials', {
         email,
         password,
-        redirect: true
+        redirect: true,
+        callbackUrl:callbackUrl
       });
 
-      if (!result?.ok) {
-        throw new Error(result?.error || 'Login failed');
+      if (result && !result.ok) {
+        throw new Error(result.error || 'Login failed');
       }
 
       return result;

@@ -52,9 +52,14 @@ export default function Register() {
 }
 
 
-// NEXTAUTH_SECRET=j4cq7BqgjM3Z4TG4qhHmPUv8TyJADu
-// NEXTAUTH_URL=http://localhost:3000
+//  NEXTAUTH_SECRET=j4cq7BqgjM3Z4TG4qhHmPUv8TyJADu
+//  NEXTAUTH_URL=http://localhost:3000
+//  # Backend API — server-only (used by NextAuth for login/refresh)
+//  API_BASE_URL=https://ivs-api.runasp.net/api
 
-// # Backend API (optional, if using external API)
-// API_BASE_URL=http://localhost:5000
+//  # Backend API — client-side (used by Axios for data fetching)
+// #  NEXT_PUBLIC_API_URL=http://localhost:5138/api
+//  NEXT_PUBLIC_API_URL=https://ivs-api.runasp.net/api
+
+// #  API_BASE_URL=ivsl-api-grfydeanfdafgtd3.canadacentral-01.azurewebsites.net/api
 

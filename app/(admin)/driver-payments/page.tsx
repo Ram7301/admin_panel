@@ -1,11 +1,5 @@
-'use client';
+import DriverPaymentsSection from '@/sections/driver-payments/DriverPaymentsSection';
 
-import dynamic from 'next/dynamic';
-
-const DriverPaymentsSection = dynamic(
-  () => import('@/sections/driver-payments/DriverPaymentsSection'),
-  { ssr: false }
-);
 
 /***************************  DRIVER PAYMENTS PAGE  ***************************/
 

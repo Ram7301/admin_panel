@@ -18,16 +18,20 @@ export const viewport = {
 
 export const metadata = {
   title: `${branding.brandName} Admin Panel`,
-  description: `${branding.brandName} Admin Panel`
+  description: `${branding.brandName} Admin Panel`,
+  icons:{
+    icon: '/favicon.png'
+  }
 };
 
 /***************************  LAYOUT - ROOT  ***************************/
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning >
       <head>
         <script src="https://fomo.codedthemes.com/pixel/gkPddwTcjNYydfr7v3FcZuToUb9ZAevo" defer data-nscript="lazyOnload"></script>
+       
       </head>
       <body>
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>

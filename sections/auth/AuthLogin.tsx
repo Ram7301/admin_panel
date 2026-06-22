@@ -1,6 +1,6 @@
 'use client';
 // @next
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
 import { useState } from 'react';
 
@@ -22,7 +22,6 @@ import type { SxProps, Theme } from '@mui/material/styles';
 import { useForm, type RegisterOptions } from 'react-hook-form';
 
 
-import { NextLink } from '@/components/routes';
 import { emailSchema, passwordSchema } from '@/utils/validation-schema/common';
 
 // @icons
@@ -51,12 +50,12 @@ function isChildObjectContained(parent: LoginFormData, child: LoginFormData): bo
 /***************************  AUTH - LOGIN  ***************************/
 
 export default function AuthLogin({ inputSx }: AuthLoginProps) {
-  const router = useRouter();
   const theme = useTheme();
   const { login, isLoading } = useAuth();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [loginError, setLoginError] = useState('');
-
+  const searchParams = useSearchParams()
+  const callBackUrl = searchParams.get('callbackUrl') || '/dashboard'
   // Initialize react-hook-form
   const {
     register,
@@ -71,11 +70,10 @@ export default function AuthLogin({ inputSx }: AuthLoginProps) {
   // Handle form submission
   const onSubmit = async (formData: LoginFormData) => {
     try {
-      ;
-      setLoginError('');
-      const result = await login(formData.email, formData.password);
 
-      console.log(result)
+      setLoginError('');
+      login(formData.email, formData.password, callBackUrl);
+
     } catch (error) {
       setLoginError(error instanceof Error ? error.message : 'Login failed');
     }
