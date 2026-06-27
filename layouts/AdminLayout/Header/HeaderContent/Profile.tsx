@@ -54,7 +54,7 @@ export default function ProfileSection() {
 
   // Build profile data from session
   const profileData = {
-    avatar: { src: '/assets/images/users/avatar-1.png', size: AvatarSize.XS },
+    avatar: { src: '/assets/images/users', size: AvatarSize.XS },
     title: session?.user?.email || 'User',
     caption: session?.user?.role || 'User',
     email: session?.user?.email

@@ -22,7 +22,7 @@ export default withAuth(
         const pathname = req.nextUrl.pathname;
 
         // Protect admin/dashboard routes - must have token
-        if (pathname.startsWith('/dashboard') || pathname.startsWith('/(admin)') || pathname.startsWith('/driver-payments')) {
+        if (pathname.startsWith('/dashboard') || pathname.startsWith('/(admin)') || pathname.startsWith('/driver-payments') || pathname.startsWith('/users')) {
           return !!token;
         }
 
@@ -43,6 +43,7 @@ export const config = {
     '/dashboard/:path*',
     '/(admin)/:path*',
     '/driver-payments/:path*',
+    '/users/:path*',
     // Allow auth pages
     '/auth/:path*'
   ]

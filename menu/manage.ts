@@ -16,6 +16,14 @@ const manage: NavItemType = {
       icon: 'IconLayoutGrid'
     },
     {
+      id: 'users',
+      title: 'Users',
+      type: 'item',
+      url: '/users',
+      icon: 'IconUsers',
+      roles: ['Super Admin']
+    },
+    {
       id: 'driver-payments',
       title: 'Driver Payments',
       type: 'item',

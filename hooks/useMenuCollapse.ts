@@ -15,6 +15,7 @@ export interface NavItemType {
   target?: boolean;
   disabled?: boolean;
   children?: NavItemType[];
+  roles?: string[]; // If set, only users with one of these roles can see this item
 }
 
 type SetSelected = Dispatch<SetStateAction<string | null>>;

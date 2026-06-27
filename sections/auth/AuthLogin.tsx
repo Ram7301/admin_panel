@@ -29,10 +29,10 @@ import { IconEye, IconEyeOff } from '@tabler/icons-react';
 import { useAuth } from '@/hooks/useAuth';
 
 // Mock user credentials
-const userCredentials = [
-  { title: 'Super Admin', email: 'admin@admin.com', password: 'Admin@123' },
-  { title: 'Admin', email: 'user@user.com', password: 'Aser@123' }
-];
+// const userCredentials = [
+//   { title: 'Super Admin', email: 'admin@admin.com', password: 'Admin@123' },
+//   { title: 'Admin', email: 'user@user.com', password: 'Aser@123' }
+// ];
 
 interface LoginFormData {
   email: string;
@@ -63,7 +63,7 @@ export default function AuthLogin({ inputSx }: AuthLoginProps) {
     handleSubmit,
     reset,
     formState: { errors }
-  } = useForm<LoginFormData>({ defaultValues: { email: 'admin@admin.com', password: 'Admin@123' } });
+  } = useForm<LoginFormData>({ defaultValues: { email: '', password: '' } });
 
   const formData = watch();
 
@@ -84,7 +84,7 @@ export default function AuthLogin({ inputSx }: AuthLoginProps) {
   return (
     <>
       <Stack direction="row" sx={{ gap: 1, mb: 2 }}>
-        {userCredentials.map((credential) => (
+        {/* {userCredentials.map((credential) => (
           <Button
             key={credential.title}
             variant="outlined"
@@ -96,7 +96,7 @@ export default function AuthLogin({ inputSx }: AuthLoginProps) {
           >
             {credential.title}
           </Button>
-        ))}
+        ))} */}
       </Stack>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={2}>
